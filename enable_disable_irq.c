@@ -28,29 +28,54 @@ void basics2()
 
 void ImportantFunction1(void)
 {
-    uint32_t prim;
+	/* Important function 1 */
+	uint32_t prim;
 
-    /* Do some stuff here which can be interrupted */
+	/* Do some stuff here which can be interrupted */
 
-    /* Read PRIMASK register, check interrupt status before you disable them */
-    /* Returns 0 if they are enabled, or non-zero if disabled */
-    prim = __get_PRIMASK();
+	/* Read PRIMASK register, check interrupt status before you disable them */
+	/* Returns 0 if they are enabled, or non-zero if disabled */
+	prim = __get_PRIMASK();
 
-    /* Disable interrupts */
-    __disable_irq();
+	/* Disable interrupts */
+	__disable_irq();
 
-    /* Do some stuff here which can not be interrupted */
+	/* Do some stuff here which can not be interrupted */
 
-    /* Call subfunction */
-    ImportantFunction2();
+	/* Call subfunction */
+	ImportantFunction2();
 
-    /* Do some stuff here which can not be interrupted */
-    /* This part is still interrupt safe if ImportantFunction2 does not enable interrupts */
+	/* Do some stuff here which can not be interrupted */
+	/* This part is still interrupt safe because ImportantFunction2 will not enable interrupts */
 
-    /* Enable interrupts back */
-    if (!prim) {
-        __enable_irq();
-    }
+	/* Enable interrupts back */
+	if (!prim) {
+		__enable_irq();
+	}
 
-    /* Do some stuff here which can be interrupted */
+	/* Do some stuff here which can be interrupted */
+}
+
+void ImportantFunction2(void)
+{
+	/* Important function 2 */
+	uint32_t prim;
+
+	/* Do some stuff here which can be interrupted */
+
+	/* Read PRIMASK register, check interrupt status before you disable them */
+	/* Returns 0 if they are enabled, or non-zero if disabled */
+	prim = __get_PRIMASK();
+
+	/* Disable interrupts */
+	__disable_irq();
+
+	/* Do some stuff here which can not be interrupted */
+
+	/* Enable interrupts back only if they were enabled before we disable it here in this function */
+	if (!prim) {
+		__enable_irq();
+	}
+
+	/* Do some stuff here which can be interrupted */
 }
